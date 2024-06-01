@@ -1,0 +1,11 @@
+{
+  "name": "visin-server",
+  "version": "1.0.0",
+  "description": "visin-server package to handle micro-services and delivery.",
+  "main": "server.mjs",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Lukas Moos",
+  "license": "ISC"
+}
