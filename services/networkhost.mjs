@@ -11,6 +11,15 @@ class Networkhost {
     );
     buildserver.use(express.static(builddirectory));
     buildserver.use(express.json({ limit: "1mb" }));
+    //
+    //Request Handling
+    //
+    buildserver.post("/api/client/sendKey", (request, response) => {
+      const data = request.body;
+
+      console.log(data.key);
+      response.json({ status: "success" });
+    });
 
     //Debug
     const debugserver = express();
