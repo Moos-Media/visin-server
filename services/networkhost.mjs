@@ -1,4 +1,5 @@
 import express, { request, response } from "express";
+const SESSIONTOKEN = "MeinindividuellerSessionTokenTHM2024VISIN";
 
 class Networkhost {
   constructor(buildport, builddirectory, debugport, debugdirectory) {
@@ -37,7 +38,8 @@ class Networkhost {
 
       //Check for access
       if (data.username == "admin" && data.passkey == "admin") {
-        response.json({ result: true });
+        response.json({ result: true, sessionToken: SESSIONTOKEN });
+        console.log("Login successful");
       } else {
         response.json({ result: false });
       }
