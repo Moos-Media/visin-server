@@ -4,7 +4,12 @@ class Core {
   constructor() {
     console.log("Core enabled.");
 
-    const networkhost = new Networkhost(8000, "build", 8001, "debugpage");
+    const networkhost = new Networkhost(
+      8000,
+      "../visin-client",
+      8001,
+      "../visin-debug"
+    );
   }
 }
 
