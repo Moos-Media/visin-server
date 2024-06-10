@@ -1,4 +1,5 @@
 import Networkhost from "./networkhost.mjs";
+import settings from "settings-store";
 
 class Core {
   constructor() {
@@ -10,6 +11,13 @@ class Core {
       8001,
       "../visin-debug"
     );
+
+    //Initializing is optional when using Electron
+    settings.init({
+      appName: "Visin", //required,
+      publisherName: "lsms65", //optional
+      reverseDNS: "localhost:8001", //required for macOS
+    });
   }
 }
 

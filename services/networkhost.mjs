@@ -1,8 +1,11 @@
 import express, { request, response } from "express";
-const SESSIONTOKEN = "MeinindividuellerSessionTokenTHM2024VISIN";
+import Tokenator from "./tokenator.mjs";
 
 class Networkhost {
   constructor(buildport, builddirectory, debugport, debugdirectory) {
+    //Set up Token Helper
+    const tokenator = new Tokenator();
+
     //Set up Servers with passed in values
     //
     //Build
@@ -38,7 +41,9 @@ class Networkhost {
 
       //Check for access
       if (data.username == "admin" && data.passkey == "admin") {
-        response.json({ result: true, sessionToken: SESSIONTOKEN });
+        let newToken = tokenator.generateToken();
+        response.json({ result: true, sessionToken: newToken });
+        console.log(newToken);
         console.log("Login successful");
       } else {
         response.json({ result: false });
