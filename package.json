@@ -9,6 +9,7 @@
   "author": "Lukas Moos",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.19.2"
+    "express": "^4.19.2",
+    "settings-store": "^1.4.1"
   }
 }
