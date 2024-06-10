@@ -3,12 +3,10 @@ import settings from "settings-store";
 
 class Core {
   constructor() {
-    console.log("Core enabled.");
-
     const networkhost = new Networkhost(
-      8000,
+      process.env.PORT_PROD,
       "../visin-client",
-      8001,
+      process.env.PORT_DEBUG,
       "../visin-debug"
     );
 
@@ -16,7 +14,7 @@ class Core {
     settings.init({
       appName: "Visin", //required,
       publisherName: "lsms65", //optional
-      reverseDNS: "localhost:8001", //required for macOS
+      reverseDNS: process.env.REVERSE_DNS, //required for macOS
     });
   }
 }

@@ -4,7 +4,7 @@ import Tokenator from "./tokenator.mjs";
 class Networkhost {
   constructor(buildport, builddirectory, debugport, debugdirectory) {
     //Set up Token Helper
-    const tokenator = new Tokenator();
+    const tokenator = new Tokenator(process.env.SESSION_ID_LENGTH);
 
     //Set up Servers with passed in values
     //
