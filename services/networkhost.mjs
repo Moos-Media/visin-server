@@ -2,6 +2,7 @@ import express, { request, response } from "express";
 import Tokenator from "./tokenator.mjs";
 
 class Networkhost {
+  userListe = new Array();
   constructor(buildport, builddirectory, debugport, debugdirectory) {
     //Set up Token Helper
     const tokenator = new Tokenator(process.env.SESSION_ID_LENGTH);
@@ -18,14 +19,22 @@ class Networkhost {
     //
     //Request Handling
     //
-    buildserver.post("/api/client/sendKey", (request, response) => {
+    buildserver.post("/api/client/registerClient", (request, response) => {
       const data = request.body;
-
-      console.log(data.key);
-      response.json({ status: "success" });
+      response.json({ status: "success", userID: this.userListe.length });
+      this.userListe.push(data.userKey);
+      console.log(this.users);
     });
 
+    buildserver.post("/api/client/sendControl", (request, response) => {
+      const data = request.body;
+
+      console.log(data.userid + data.control);
+      response.json({ status: "success" });
+    });
+    //
     //Debug
+    //
     const debugserver = express();
     debugserver.listen(debugport, () =>
       console.log("Debug Server Listening at " + debugport)
