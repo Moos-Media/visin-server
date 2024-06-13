@@ -29,7 +29,7 @@ class Networkhost {
     buildserver.post("/api/client/sendControl", (request, response) => {
       const data = request.body;
 
-      console.log(data.userid + data.control);
+      console.log(data.userID + data.control);
       response.json({ status: "success" });
     });
     //
@@ -45,7 +45,7 @@ class Networkhost {
     //
     //RequestHandling
     //
-    debugserver.post("/api/login", (request, response) => {
+    debugserver.post("/api/debug/login", (request, response) => {
       const data = request.body;
 
       //Check for access
