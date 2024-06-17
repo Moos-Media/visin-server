@@ -1,6 +1,6 @@
 export default class GameCell {
-  constructor() {
-    this.color = "GREEN";
+  constructor(_color = "WHITE") {
+    this.color = _color;
     this.isOn = true;
   }
 

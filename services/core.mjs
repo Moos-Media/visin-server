@@ -5,9 +5,8 @@ import StateManager from "./statemanager.mjs";
 
 class Core {
   constructor() {
-    let test = new StateManager();
-
-    console.log(test.getCurrentBoardForDebug());
+    let stateManager = new StateManager();
+    stateManager.setupTHMLOGO(10, 0);
 
     const ee = new EventEmitter();
 
@@ -16,7 +15,8 @@ class Core {
       "../visin-client",
       process.env.PORT_DEBUG,
       "../visin-debug",
-      ee
+      ee,
+      stateManager
     );
 
     //Initializing is optional when using Electron

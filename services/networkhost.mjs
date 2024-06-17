@@ -1,14 +1,19 @@
 import express, { request, response } from "express";
 import Tokenator from "./tokenator.mjs";
 import QueueManager from "./queuemanager.mjs";
-import StateManager from "./statemanager.mjs";
 
 export default class Networkhost {
-  constructor(buildport, builddirectory, debugport, debugdirectory, _ee) {
+  constructor(
+    buildport,
+    builddirectory,
+    debugport,
+    debugdirectory,
+    _ee,
+    _stateManager
+  ) {
     //Set up Token Helper
     const tokenator = new Tokenator(process.env.SESSION_ID_LENGTH);
     const queueManager = new QueueManager();
-    let stateManager = new StateManager();
 
     //Set up Servers with passed in values
     //
@@ -72,7 +77,7 @@ export default class Networkhost {
       //Check for access
       if (tokenator.validateToken(data.sessionToken)) {
         response.json({
-          boardInfo: stateManager.getCurrentBoardForDebug(),
+          boardInfo: _stateManager.getCurrentBoardForDebug(),
           status: "success",
         });
       }
