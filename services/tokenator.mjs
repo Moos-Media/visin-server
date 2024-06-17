@@ -28,9 +28,9 @@ export default class Tokenator {
     //Check all stored Tokens
     let output = false;
 
-    for (i = 0; i < this.tokens.length; i++) {
-      currentElement = this.tokens.at(i);
-      if (tcurrentElement.token == input) {
+    for (let i = 0; i < this.tokens.length; i++) {
+      let currentElement = this.tokens.at(i);
+      if (currentElement.token == input) {
         const now = new Date();
         const timestamp = now.getTime();
         if (timestamp - currentElement.time < 900000) {

@@ -2,3 +2,4 @@
 /api/client/sendControl         userID: 0-99 , control: "LEFT", "DOWN", "RIGHT"     status: "success"
 
 /api/debug/login                username: string, passkey: string                   result: bool, sessionToken: rand
+/api/debug/getCurrentBoard      sessionToken: rand                                  status: "success", boardInfo: {width, height, GameArray[{isOn, color}]}

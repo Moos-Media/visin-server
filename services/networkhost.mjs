@@ -1,11 +1,14 @@
 import express, { request, response } from "express";
 import Tokenator from "./tokenator.mjs";
+import QueueManager from "./queuemanager.mjs";
+import StateManager from "./statemanager.mjs";
 
-class Networkhost {
-  userListe = new Array();
-  constructor(buildport, builddirectory, debugport, debugdirectory) {
+export default class Networkhost {
+  constructor(buildport, builddirectory, debugport, debugdirectory, _ee) {
     //Set up Token Helper
     const tokenator = new Tokenator(process.env.SESSION_ID_LENGTH);
+    const queueManager = new QueueManager();
+    let stateManager = new StateManager();
 
     //Set up Servers with passed in values
     //
@@ -21,9 +24,12 @@ class Networkhost {
     //
     buildserver.post("/api/client/registerClient", (request, response) => {
       const data = request.body;
-      response.json({ status: "success", userID: this.userListe.length });
-      this.userListe.push(data.userKey);
-      console.log(this.users);
+      // if (this.userList.length < process.env.MAX_CONCURRENT_PLAYERS) {
+      //   response.json({ status: "success", userID: this.userList.length });
+      //   this.userList.push(data.userKey);
+      // }
+      let userID = queueManager.registerClient(data.userKey);
+      response.json({ status: "success", userID: userID });
     });
 
     buildserver.post("/api/client/sendControl", (request, response) => {
@@ -31,6 +37,7 @@ class Networkhost {
 
       console.log(data.userID + data.control);
       response.json({ status: "success" });
+      _ee.emit("CONTROL_RECEIVED", () => {});
     });
     //
     //Debug
@@ -58,7 +65,17 @@ class Networkhost {
         response.json({ result: false });
       }
     });
+
+    debugserver.post("/api/debug/getCurrentBoard", (request, response) => {
+      const data = request.body;
+
+      //Check for access
+      if (tokenator.validateToken(data.sessionToken)) {
+        response.json({
+          boardInfo: stateManager.getCurrentBoardForDebug(),
+          status: "success",
+        });
+      }
+    });
   }
 }
-
-export default Networkhost;

@@ -1,13 +1,22 @@
 import Networkhost from "./networkhost.mjs";
 import settings from "settings-store";
+import EventEmitter from "node:events";
+import StateManager from "./statemanager.mjs";
 
 class Core {
   constructor() {
+    let test = new StateManager();
+
+    console.log(test.getCurrentBoardForDebug());
+
+    const ee = new EventEmitter();
+
     const networkhost = new Networkhost(
       process.env.PORT_PROD,
       "../visin-client",
       process.env.PORT_DEBUG,
-      "../visin-debug"
+      "../visin-debug",
+      ee
     );
 
     //Initializing is optional when using Electron
@@ -15,6 +24,12 @@ class Core {
       appName: "Visin", //required,
       publisherName: "lsms65", //optional
       reverseDNS: process.env.REVERSE_DNS, //required for macOS
+    });
+
+    //Event Handling
+
+    ee.on("NEW_USER_CONNECTED", (stream) => {
+      queueManager.registerClient(stream);
     });
   }
 }
