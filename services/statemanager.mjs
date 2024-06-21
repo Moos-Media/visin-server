@@ -7,12 +7,16 @@ export default class StateManager {
     this.height = inputHeight;
     this._utils = new Utils();
     this.board = this._utils.make2DArray(this.width, this.height);
+    this.controlledX = 5;
+    this.controlledY = 0;
 
     for (let i = 0; i < this.width; i++) {
       for (let j = 0; j < this.height; j++) {
         this.board[i][j] = new GameCell();
       }
     }
+
+    this.board[this.controlledX][this.controlledY].changeColor("COLOR1");
   }
 
   getCurrentBoardForDebug() {
@@ -57,5 +61,22 @@ export default class StateManager {
     this.board[xOff + 0][yOff + 3].changeColor("GREEN");
     this.board[xOff + 1][yOff + 3].changeColor("GREEN");
     this.board[xOff + 2][yOff + 3].changeColor("GREEN");
+  }
+
+  doGameTick(input) {
+    this.board[this.controlledX][this.controlledY].changeColor("WHITE");
+
+    switch (input) {
+      case "LEFT":
+        this.controlledX -= 1;
+        break;
+      case "RIGHT":
+        this.controlledX += 1;
+        break;
+      default:
+        break;
+    }
+
+    this.board[this.controlledX][this.controlledY].changeColor("COLOR1");
   }
 }

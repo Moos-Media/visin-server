@@ -14,6 +14,8 @@ export default class Networkhost {
     //Set up Token Helper
     const tokenator = new Tokenator(process.env.SESSION_ID_LENGTH);
     const queueManager = new QueueManager();
+    this.CURRENTPLAYER = 0;
+    this.buffer = new Array();
 
     //Set up Servers with passed in values
     //
@@ -42,7 +44,9 @@ export default class Networkhost {
 
       console.log(data.userID + data.control);
       response.json({ status: "success" });
-      _ee.emit("CONTROL_RECEIVED", () => {});
+      if (data.userID == this.CURRENTPLAYER) {
+        this.buffer.push(data.control);
+      }
     });
     //
     //Debug
@@ -82,5 +86,19 @@ export default class Networkhost {
         });
       }
     });
+  }
+
+  changePlayer(newPlayer) {
+    this.CURRENTPLAYER = newPlayer;
+    this.buffer = new Array();
+  }
+
+  getNextControl() {
+    let output = "";
+    if (this.buffer.length > 0) {
+      output = this.buffer[0];
+      this.buffer = this.buffer.slice(1);
+    }
+    return output;
   }
 }

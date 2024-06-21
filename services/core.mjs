@@ -3,10 +3,15 @@ import settings from "settings-store";
 import EventEmitter from "node:events";
 import StateManager from "./statemanager.mjs";
 
+let FRAMERATE = 30;
+
 class Core {
   constructor() {
     let stateManager = new StateManager();
     stateManager.setupTHMLOGO(10, 0);
+    setInterval(() => {
+      stateManager.doGameTick(networkhost.getNextControl());
+    }, 1000 / FRAMERATE);
 
     const ee = new EventEmitter();
 
