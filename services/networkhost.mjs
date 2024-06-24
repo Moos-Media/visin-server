@@ -1,4 +1,6 @@
 import express, { request, response } from "express";
+import { Server, Socket } from "socket.io";
+import * as http from "http";
 import Tokenator from "./tokenator.mjs";
 import QueueManager from "./queuemanager.mjs";
 
@@ -20,16 +22,19 @@ export default class Networkhost {
     //Set up Servers with passed in values
     //
     //Build
-    const buildserver = express();
-    buildserver.listen(buildport, () =>
-      console.log("Build Server Listening at " + buildport)
-    );
-    buildserver.use(express.static(builddirectory));
-    buildserver.use(express.json({ limit: "1mb" }));
+    const buildApp = express();
+
+    const buildServer = http.createServer(buildApp);
+    buildServer.listen(buildport);
+    const buildIO = new Server(buildServer);
+    buildApp.use(express.static(builddirectory));
+    buildApp.use(express.json({ limit: "1mb" }));
+    buildIO.on("connection", this.newConnection);
+
     //
     //Request Handling
     //
-    buildserver.post("/api/client/registerClient", (request, response) => {
+    buildApp.post("/api/client/registerClient", (request, response) => {
       const data = request.body;
       // if (this.userList.length < process.env.MAX_CONCURRENT_PLAYERS) {
       //   response.json({ status: "success", userID: this.userList.length });
@@ -39,7 +44,7 @@ export default class Networkhost {
       response.json({ status: "success", userID: userID });
     });
 
-    buildserver.post("/api/client/sendControl", (request, response) => {
+    buildApp.post("/api/client/sendControl", (request, response) => {
       const data = request.body;
 
       console.log(data.userID + data.control);
@@ -51,17 +56,19 @@ export default class Networkhost {
     //
     //Debug
     //
-    const debugserver = express();
-    debugserver.listen(debugport, () =>
-      console.log("Debug Server Listening at " + debugport)
-    );
-    debugserver.use(express.static(debugdirectory));
-    debugserver.use(express.json({ limit: "1mb" }));
+    const debugApp = express();
+
+    const debugServer = http.createServer(debugApp);
+    debugServer.listen(debugport);
+    const debugIO = new Server(debugServer);
+    debugApp.use(express.static(debugdirectory));
+    debugApp.use(express.json({ limit: "1mb" }));
+    debugIO.on("connection", this.newConnection);
 
     //
     //RequestHandling
     //
-    debugserver.post("/api/debug/login", (request, response) => {
+    debugApp.post("/api/debug/login", (request, response) => {
       const data = request.body;
 
       //Check for access
@@ -75,7 +82,7 @@ export default class Networkhost {
       }
     });
 
-    debugserver.post("/api/debug/getCurrentBoard", (request, response) => {
+    debugApp.post("/api/debug/getCurrentBoard", (request, response) => {
       const data = request.body;
 
       //Check for access
@@ -100,5 +107,10 @@ export default class Networkhost {
       this.buffer = this.buffer.slice(1);
     }
     return output;
+  }
+
+  newConnection(socket) {
+    console.log("new connection from socket");
+    console.log(socket);
   }
 }
