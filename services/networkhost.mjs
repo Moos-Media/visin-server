@@ -35,9 +35,7 @@ export default class Networkhost {
     //
 
     buildIO.on("connection", (socket) => {
-      console.log("New Socket Connection Build");
       this.players.push(socket.id);
-      console.log(this.players);
 
       socket.on("/api/client/sendControl", (args) => {
         this.buffer.push(args.control);
