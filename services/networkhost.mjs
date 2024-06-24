@@ -60,6 +60,22 @@ export default class Networkhost {
           sessionID: ID,
         });
       });
+
+      socket.on("/api/client/joinSession", (arg, callback) => {
+        for (let i = 0; i < this.activeSessions.length; i++) {
+          const element = this.activeSessions[i];
+
+          let status = "";
+          if (element.sessionID == arg) {
+            element.player2 = socket.id;
+            console.log("Fertige Session: " + element);
+            status = "success";
+          }
+          callback({
+            status,
+          });
+        }
+      });
     });
 
     //
