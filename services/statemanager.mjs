@@ -2,7 +2,7 @@ import Utils from "./utils.mjs";
 import GameCell from "./gamecell.mjs";
 
 export default class StateManager {
-  constructor(inputWidth = 22, inputHeight = 8) {
+  constructor(inputWidth = 22, inputHeight = 8, frameRate) {
     this.width = inputWidth;
     this.height = inputHeight;
     this._utils = new Utils();
@@ -12,7 +12,7 @@ export default class StateManager {
 
     for (let i = 0; i < this.width; i++) {
       for (let j = 0; j < this.height; j++) {
-        this.board[i][j] = new GameCell();
+        this.board[i][j] = new GameCell("WHITE", "WHITE", frameRate);
       }
     }
 
@@ -47,6 +47,7 @@ export default class StateManager {
       }
     }
   }
+
   setupTHMLOGO(xOff, yOff) {
     this.board[xOff + 1][yOff].changeColor("GREEN");
     this.board[xOff + 2][yOff].changeColor("GREEN");
@@ -99,7 +100,6 @@ export default class StateManager {
       this.swapCells(xOff, yOff);
       // Do Hopping to different columns
     } else {
-      console.log("HIER");
       for (let i = 0; i < 5; i++) {
         if (this.isValid(i * xOff, yOff)) {
           this.swapCells(i * xOff, yOff);
@@ -110,7 +110,6 @@ export default class StateManager {
   }
 
   isValid(_xOff, _yOff) {
-    console.log("Checked Offsets are: " + _xOff + _yOff);
     // Check for Out-Of-Bounds of X Move
     if (this.controlledX == 0 && _xOff < 0) return false;
     if (this.controlledX == this.width - 1 && _xOff > 0) return false;

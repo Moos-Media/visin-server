@@ -7,8 +7,7 @@ let FRAMERATE = 30;
 
 class Core {
   constructor() {
-    let stateManager = new StateManager();
-    stateManager.setupTHMLOGO(10, 3);
+    let stateManager = new StateManager(22, 6, FRAMERATE);
     setInterval(() => {
       stateManager.doGameTick(networkhost.getNextControl());
     }, 1000 / FRAMERATE);
@@ -29,12 +28,6 @@ class Core {
       appName: "Visin", //required,
       publisherName: "lsms65", //optional
       reverseDNS: process.env.REVERSE_DNS, //required for macOS
-    });
-
-    //Event Handling
-
-    ee.on("NEW_USER_CONNECTED", (stream) => {
-      queueManager.registerClient(stream);
     });
   }
 }

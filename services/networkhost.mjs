@@ -2,7 +2,6 @@ import express, { request, response } from "express";
 import { Server, Socket } from "socket.io";
 import * as http from "http";
 import Tokenator from "./tokenator.mjs";
-import { tracingChannel } from "diagnostics_channel";
 
 export default class Networkhost {
   constructor(
@@ -16,6 +15,8 @@ export default class Networkhost {
     //Set up Token Helper
     const tokenator = new Tokenator(process.env.SESSION_ID_LENGTH);
     this.CURRENTPLAYER = 0;
+    this.players = new Array();
+    this.activeSessions = new Array();
     this.buffer = new Array();
 
     //Set up Servers with passed in values
@@ -35,13 +36,36 @@ export default class Networkhost {
 
     buildIO.on("connection", (socket) => {
       console.log("New Socket Connection Build");
+      this.players.push(socket.id);
+      console.log(this.players);
 
       socket.on("/api/client/sendControl", (args) => {
         this.buffer.push(args.control);
       });
+
+      socket.on("/api/client/startSession", (callback) => {
+        let statusOut = "failed";
+        let ID = 0;
+        if (this.activeSessions.length < 10) {
+          statusOut = "success";
+          ID = Math.floor(Math.random() * 100000);
+          this.activeSessions.push({
+            player1: socket.id,
+            player2: "",
+            sessionID: ID,
+          });
+        }
+        callback({
+          status: statusOut,
+          sessionID: ID,
+        });
+      });
     });
+
+    //
     //
     //Debug
+    //
     //
     const debugApp = express();
 
