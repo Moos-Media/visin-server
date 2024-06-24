@@ -17,7 +17,6 @@ export default class StateManager {
     }
 
     this.board[this.controlledX][this.controlledY].changeColor("COLOR2");
-    this.board[this.controlledX][this.controlledY].toggleBlinking();
   }
 
   getCurrentBoardForDebug() {
@@ -66,19 +65,77 @@ export default class StateManager {
   }
 
   doGameTick(input) {
-    this.board[this.controlledX][this.controlledY].changeColor("WHITE");
+    // Get Offsets for move direction
+    let xOff,
+      yOff = 0;
 
     switch (input) {
       case "LEFT":
-        this.controlledX -= 1;
+        xOff = -1;
+        yOff = 0;
         break;
       case "RIGHT":
-        this.controlledX += 1;
+        xOff = 1;
+        yOff = 0;
+        break;
+      case "DOWN":
+        xOff = 0;
+        yOff = 1;
         break;
       default:
+        xOff = 0;
+        yOff = 0;
         break;
     }
 
-    this.board[this.controlledX][this.controlledY].changeColor("COLOR2");
+    // Do basic Movements
+    // Drop Down
+    if (input == "DOWN") {
+      while (this.isValid(xOff, yOff)) {
+        this.swapCells(xOff, yOff);
+      }
+      //Move left and right
+    } else if (this.isValid(xOff, yOff)) {
+      this.swapCells(xOff, yOff);
+      // Do Hopping to different columns
+    } else {
+      console.log("HIER");
+      for (let i = 0; i < 5; i++) {
+        if (this.isValid(i * xOff, yOff)) {
+          this.swapCells(i * xOff, yOff);
+          break;
+        }
+      }
+    }
+  }
+
+  isValid(_xOff, _yOff) {
+    console.log("Checked Offsets are: " + _xOff + _yOff);
+    // Check for Out-Of-Bounds of X Move
+    if (this.controlledX == 0 && _xOff < 0) return false;
+    if (this.controlledX == this.width - 1 && _xOff > 0) return false;
+
+    // Check for Out-Of-Bound of Y Move
+    if (this.controlledY == this.height - 1 && _yOff > 0) return false;
+
+    // Check for blocked cells
+    if (
+      this.board[this.controlledX + _xOff][
+        this.controlledY + _yOff
+      ].getColor() != "WHITE"
+    )
+      return false;
+
+    return true;
+  }
+
+  swapCells(_xOff, _yOff) {
+    let old = this.board[this.controlledX][this.controlledY];
+    this.board[this.controlledX][this.controlledY] =
+      this.board[this.controlledX + _xOff][this.controlledY + _yOff];
+    this.board[this.controlledX + _xOff][this.controlledY + _yOff] = old;
+
+    this.controlledX += _xOff;
+    this.controlledY += _yOff;
   }
 }
