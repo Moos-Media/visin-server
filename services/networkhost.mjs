@@ -3,6 +3,7 @@ import { Server, Socket } from "socket.io";
 import * as http from "http";
 import Tokenator from "./tokenator.mjs";
 import QueueManager from "./queuemanager.mjs";
+import { tracingChannel } from "diagnostics_channel";
 
 export default class Networkhost {
   constructor(
@@ -29,7 +30,6 @@ export default class Networkhost {
     const buildIO = new Server(buildServer);
     buildApp.use(express.static(builddirectory));
     buildApp.use(express.json({ limit: "1mb" }));
-    buildIO.on("connection", this.newConnection);
 
     //
     //Request Handling
@@ -53,6 +53,19 @@ export default class Networkhost {
         this.buffer.push(data.control);
       }
     });
+
+    buildIO.on("connection", (socket) => {
+      console.log("New Socket Connection Build");
+
+      socket.on("/api/client/sendControl", (args) => {
+        this.buffer.push(args.control);
+      });
+    });
+
+    buildIO.on("TEST", (data) => {
+      console.log("Hier");
+      console.log(data);
+    });
     //
     //Debug
     //
@@ -63,7 +76,6 @@ export default class Networkhost {
     const debugIO = new Server(debugServer);
     debugApp.use(express.static(debugdirectory));
     debugApp.use(express.json({ limit: "1mb" }));
-    debugIO.on("connection", this.newConnection);
 
     //
     //RequestHandling
@@ -93,6 +105,13 @@ export default class Networkhost {
         });
       }
     });
+
+    debugIO.on("connection", () => {
+      console.log("New Socket Connection Debug");
+      debugIO.on("disconnect", () => {
+        console.log("Disconnected");
+      });
+    });
   }
 
   changePlayer(newPlayer) {
@@ -107,10 +126,5 @@ export default class Networkhost {
       this.buffer = this.buffer.slice(1);
     }
     return output;
-  }
-
-  newConnection(socket) {
-    console.log("new connection from socket");
-    console.log(socket);
   }
 }
