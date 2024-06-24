@@ -16,7 +16,8 @@ export default class StateManager {
       }
     }
 
-    this.board[this.controlledX][this.controlledY].changeColor("COLOR1");
+    this.board[this.controlledX][this.controlledY].changeColor("COLOR2");
+    this.board[this.controlledX][this.controlledY].toggleBlinking();
   }
 
   getCurrentBoardForDebug() {
@@ -26,8 +27,9 @@ export default class StateManager {
       for (let j = 0; j < this.width; j++) {
         let currentElement = this.board[j][i];
         output.push({
-          color: currentElement.getColor(),
+          color: currentElement.update(),
           isOn: currentElement.getIsOn(),
+          isBlinking: currentElement.getIsBlinking(),
         });
       }
     }
@@ -77,6 +79,6 @@ export default class StateManager {
         break;
     }
 
-    this.board[this.controlledX][this.controlledY].changeColor("COLOR1");
+    this.board[this.controlledX][this.controlledY].changeColor("COLOR2");
   }
 }
