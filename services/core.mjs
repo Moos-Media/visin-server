@@ -7,7 +7,7 @@ let FRAMERATE = 30;
 
 class Core {
   constructor() {
-    let stateManager = new StateManager(22, 6, FRAMERATE);
+    let stateManager = new StateManager(7, 6, FRAMERATE);
     setInterval(() => {
       stateManager.doGameTick(networkhost.getNextControl());
     }, 1000 / FRAMERATE);

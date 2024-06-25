@@ -16,7 +16,8 @@ export default class StateManager {
       }
     }
 
-    this.board[this.controlledX][this.controlledY].changeColor("COLOR2");
+    this.setupTHMLOGO(1, 1);
+    this.board[this.controlledX][this.controlledY].changeColor("COLOR3");
   }
 
   getCurrentBoardForDebug() {
@@ -25,6 +26,34 @@ export default class StateManager {
     for (let i = 0; i < this.height; i++) {
       for (let j = 0; j < this.width; j++) {
         let currentElement = this.board[j][i];
+        output.push({
+          color: currentElement.update(),
+          isOn: currentElement.getIsOn(),
+          isBlinking: currentElement.getIsBlinking(),
+        });
+      }
+    }
+
+    return {
+      width: this.width,
+      height: this.height,
+      board: output,
+    };
+  }
+
+  getCurrentBoardForShowing() {
+    let output = new Array();
+    let currentElement;
+
+    for (let i = 0; i < this.height; i++) {
+      for (let j = 0; j < this.width; j++) {
+        //First Row Left to Right etc.
+        if (i % 2 == 0) {
+          currentElement = this.board[j][i];
+        } else {
+          // Second Row Right to Left etc.
+          currentElement = this.board[this.width - j - 1][i];
+        }
         output.push({
           color: currentElement.update(),
           isOn: currentElement.getIsOn(),
