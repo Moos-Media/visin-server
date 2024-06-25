@@ -66,7 +66,7 @@ export default class Networkhost {
           let status = "";
           if (element.sessionID == arg) {
             element.player2 = socket.id;
-            console.log("Fertige Session: " + element);
+            buildIO.sockets.to(element["player1"]).emit("playerjoined");
             status = "success";
           }
           callback({
@@ -120,7 +120,7 @@ export default class Networkhost {
 
     debugApp.post("/api/show/getCurrentBoard", (request, response) => {
       const data = request.body;
-      console.log("Got req");
+
       response.json({
         boardInfo: _stateManager.getCurrentBoardForShowing(),
         status: "success",
