@@ -33,7 +33,6 @@ export default class Networkhost {
     //
     //Request Handling
     //
-
     buildIO.on("connection", (socket) => {
       this.players.push(socket.id);
 
@@ -72,6 +71,26 @@ export default class Networkhost {
           callback({
             status,
           });
+        }
+      });
+
+      socket.on("/api/client/colorSelected", (ID, playerIndex, colorCode) => {
+        for (let i = 0; i < this.activeSessions.length; i++) {
+          const element = this.activeSessions[i];
+
+          if (element.sessionID != ID) continue;
+          console.log("Hier");
+          if (playerIndex == 0) {
+            element.player1Color = colorCode;
+            buildIO.sockets
+              .to(element.player2)
+              .emit("color-blocked", colorCode);
+          } else {
+            element.player2Color = colorCode;
+            buildIO.sockets
+              .to(element.player1)
+              .emit("color-blocked", colorCode);
+          }
         }
       });
     });
