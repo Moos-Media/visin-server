@@ -1,5 +1,6 @@
 import Utils from "./utils.mjs";
 import GameCell from "./gamecell.mjs";
+import GameSession from "./gamesession.mjs";
 
 export default class StateManager {
   constructor(inputWidth = 22, inputHeight = 8, frameRate, _ee) {
