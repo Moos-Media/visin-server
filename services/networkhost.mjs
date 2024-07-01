@@ -99,6 +99,7 @@ export default class Networkhost {
       });
 
       _ee.on("game-won", (data) => {
+        let sessionToDelete = -1;
         let winner = "";
         let loser = "";
         if (data.player == 1) {
@@ -115,7 +116,13 @@ export default class Networkhost {
           if (element.sessionID == data.session) {
             buildIO.sockets.to(element[winner]).emit("won");
             buildIO.sockets.to(element[loser]).emit("lost");
+            sessionToDelete = i;
           }
+        }
+
+        if (sessionToDelete > -1) {
+          this.activeSessions.splice(sessionToDelete, 1);
+          _stateManager.whiteOut();
         }
       });
     });
