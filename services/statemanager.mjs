@@ -14,18 +14,26 @@ export default class StateManager {
     this.activePlayer = 1;
     this.emitter = _ee;
     this.activeSession = 0;
+    this.frameRate = frameRate;
+    this.moveCount = 0;
 
-    for (let i = 0; i < this.width; i++) {
-      for (let j = 0; j < this.height; j++) {
-        this.board[i][j] = new GameCell("WHITE", "WHITE", frameRate);
-      }
-    }
+    this.reset();
 
     this.board[this.controlledX][this.controlledY].changeColor(
       this.player1Color
     );
   }
 
+  reset() {
+    for (let i = 0; i < this.width; i++) {
+      for (let j = 0; j < this.height; j++) {
+        this.board[i][j] = new GameCell("WHITE", "WHITE", this.frameRate);
+      }
+    }
+
+    this.pickStartingCell();
+    this.moveCount = 0;
+  }
   getCurrentBoardForDebug() {
     let output = new Array();
 
@@ -187,16 +195,14 @@ export default class StateManager {
 
   endMove() {
     this.board[this.controlledX][this.controlledY].setPlayer(this.activePlayer);
+    this.moveCount += 1;
 
     let won = this.isWon();
     console.log(won);
 
     //Change Active Player if not won
     if (!won) {
-      //Pick new starting cell
-      //TODO Change algorithm for picking starting cell
-      this.controlledX = 5;
-      this.controlledY = 0;
+      this.pickStartingCell();
 
       if (this.activePlayer == 1) {
         this.activePlayer = 2;
@@ -210,11 +216,17 @@ export default class StateManager {
         );
       }
       this.emitter.emit("active-player-changed", this.activePlayer);
-    } else {
+    } else if (won) {
       this.emitter.emit("game-won", {
         player: this.activePlayer,
         session: this.activeSession,
       });
+      this.reset();
+    } else if (this.moveCount == 42) {
+      this.emitter.emit("game-draw", {
+        session: this.activePlayer,
+      });
+      this.reset();
     }
   }
   // Function to check for a win
@@ -258,5 +270,28 @@ export default class StateManager {
 
   updateActiveSession(newSession) {
     this.activeSession = newSession;
+  }
+
+  pickStartingCell() {
+    let available = new Array();
+    for (let i = 0; i < this.width; i++) {
+      const element = this.board[i][0];
+
+      if (element.getPlayer() == -99) {
+        available.push(i);
+      }
+    }
+
+    let pickedIndex = this._helperGetRandomInt(available.length);
+    console.log(available);
+    console.log("Picked Index: " + pickedIndex);
+    console.log("Index: " + available[pickedIndex]);
+
+    this.controlledX = available[pickedIndex];
+    this.controlledY = 0;
+  }
+
+  _helperGetRandomInt(max) {
+    return Math.floor(Math.random() * max);
   }
 }

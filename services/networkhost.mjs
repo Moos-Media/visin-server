@@ -125,6 +125,25 @@ export default class Networkhost {
           _stateManager.whiteOut();
         }
       });
+
+      _ee.on("game-draw", (data) => {
+        let sessionToDelete = -1;
+
+        for (let i = 0; i < this.activeSessions.length; i++) {
+          const element = this.activeSessions[i];
+
+          if (element.sessionID == data.session) {
+            buildIO.sockets.to(element[element.player1]).emit("draw");
+            buildIO.sockets.to(element[element.player2]).emit("draw");
+            sessionToDelete = i;
+          }
+        }
+
+        if (sessionToDelete > -1) {
+          this.activeSessions.splice(sessionToDelete, 1);
+          _stateManager.whiteOut();
+        }
+      });
     });
 
     //
