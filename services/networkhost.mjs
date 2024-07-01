@@ -79,9 +79,9 @@ export default class Networkhost {
           const element = this.activeSessions[i];
 
           if (element.sessionID != ID) continue;
-          console.log("Hier");
           if (playerIndex == 0) {
             element.player1Color = colorCode;
+            _stateManager.updatePlayer1Color(colorCode);
             buildIO.sockets
               .to(element.player2)
               .emit("color-blocked", colorCode);

@@ -9,6 +9,7 @@ export default class StateManager {
     this.board = this._utils.make2DArray(this.width, this.height);
     this.controlledX = 5;
     this.controlledY = 0;
+    this.player1Color = "GREEN";
 
     for (let i = 0; i < this.width; i++) {
       for (let j = 0; j < this.height; j++) {
@@ -16,8 +17,9 @@ export default class StateManager {
       }
     }
 
-    this.setupTHMLOGO(1, 1);
-    this.board[this.controlledX][this.controlledY].changeColor("COLOR3");
+    this.board[this.controlledX][this.controlledY].changeColor(
+      this.player1Color
+    );
   }
 
   getCurrentBoardForDebug() {
@@ -165,5 +167,12 @@ export default class StateManager {
 
     this.controlledX += _xOff;
     this.controlledY += _yOff;
+  }
+
+  updatePlayer1Color(colCode) {
+    this.player1Color = colCode;
+    this.board[this.controlledX][this.controlledY].changeColor(
+      this.player1Color
+    );
   }
 }
