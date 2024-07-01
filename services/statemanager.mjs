@@ -2,14 +2,17 @@ import Utils from "./utils.mjs";
 import GameCell from "./gamecell.mjs";
 
 export default class StateManager {
-  constructor(inputWidth = 22, inputHeight = 8, frameRate) {
+  constructor(inputWidth = 22, inputHeight = 8, frameRate, _ee) {
     this.width = inputWidth;
     this.height = inputHeight;
     this._utils = new Utils();
     this.board = this._utils.make2DArray(this.width, this.height);
     this.controlledX = 5;
     this.controlledY = 0;
-    this.player1Color = "GREEN";
+    this.player1Color = "COLOR1";
+    this.player2Color = "COLOR2";
+    this.activePlayer = 1;
+    this.emitter = _ee;
 
     for (let i = 0; i < this.width; i++) {
       for (let j = 0; j < this.height; j++) {
@@ -126,6 +129,7 @@ export default class StateManager {
       while (this.isValid(xOff, yOff)) {
         this.swapCells(xOff, yOff);
       }
+      this.endMove();
       //Move left and right
     } else if (this.isValid(xOff, yOff)) {
       this.swapCells(xOff, yOff);
@@ -174,5 +178,34 @@ export default class StateManager {
     this.board[this.controlledX][this.controlledY].changeColor(
       this.player1Color
     );
+  }
+
+  updatePlayer2Color(colCode) {
+    this.player2Color = colCode;
+  }
+
+  endMove() {
+    let notWon = true;
+
+    //Change Active Player if not won
+    if (notWon) {
+      //Pick new starting cell
+      //TODO Change algorithm for picking starting cell
+      this.controlledX = 5;
+      this.controlledY = 0;
+
+      if (this.activePlayer == 1) {
+        this.activePlayer = 2;
+        this.board[this.controlledX][this.controlledY].changeColor(
+          this.player2Color
+        );
+      } else {
+        this.activePlayer = 1;
+        this.board[this.controlledX][this.controlledY].changeColor(
+          this.player1Color
+        );
+      }
+      this.emitter.emit("active-player-changed", this.activePlayer);
+    }
   }
 }

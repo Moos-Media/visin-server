@@ -7,12 +7,12 @@ let FRAMERATE = 30;
 
 class Core {
   constructor() {
-    let stateManager = new StateManager(7, 6, FRAMERATE);
+    const ee = new EventEmitter();
+
+    let stateManager = new StateManager(7, 6, FRAMERATE, ee);
     setInterval(() => {
       stateManager.doGameTick(networkhost.getNextControl());
     }, 1000 / FRAMERATE);
-
-    const ee = new EventEmitter();
 
     const networkhost = new Networkhost(
       process.env.PORT_PROD,
@@ -22,6 +22,10 @@ class Core {
       ee,
       stateManager
     );
+
+    ee.on("active-player-changed", (data) => {
+      networkhost.changePlayer(data);
+    });
 
     //Initializing is optional when using Electron
     settings.init({

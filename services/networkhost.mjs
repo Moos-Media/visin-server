@@ -14,7 +14,7 @@ export default class Networkhost {
   ) {
     //Set up Token Helper
     const tokenator = new Tokenator(process.env.SESSION_ID_LENGTH);
-    this.CURRENTPLAYER = 0;
+    this.CURRENTPLAYER = 1;
     this.players = new Array();
     this.activeSessions = new Array();
     this.buffer = new Array();
@@ -37,7 +37,9 @@ export default class Networkhost {
       this.players.push(socket.id);
 
       socket.on("/api/client/sendControl", (args) => {
-        this.buffer.push(args.control);
+        if (args.player == this.CURRENTPLAYER) {
+          this.buffer.push(args.control);
+        }
       });
 
       socket.on("/api/client/startSession", (callback) => {
@@ -79,7 +81,7 @@ export default class Networkhost {
           const element = this.activeSessions[i];
 
           if (element.sessionID != ID) continue;
-          if (playerIndex == 0) {
+          if (playerIndex == 1) {
             element.player1Color = colorCode;
             _stateManager.updatePlayer1Color(colorCode);
             buildIO.sockets
@@ -87,6 +89,7 @@ export default class Networkhost {
               .emit("color-blocked", colorCode);
           } else {
             element.player2Color = colorCode;
+            _stateManager.updatePlayer2Color(colorCode);
             buildIO.sockets
               .to(element.player1)
               .emit("color-blocked", colorCode);
