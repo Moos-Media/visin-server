@@ -13,6 +13,7 @@ export default class StateManager {
     this.player2Color = "COLOR2";
     this.activePlayer = 1;
     this.emitter = _ee;
+    this.activeSession = 0;
 
     for (let i = 0; i < this.width; i++) {
       for (let j = 0; j < this.height; j++) {
@@ -185,10 +186,13 @@ export default class StateManager {
   }
 
   endMove() {
-    let notWon = true;
+    this.board[this.controlledX][this.controlledY].setPlayer(this.activePlayer);
+
+    let won = this.isWon();
+    console.log(won);
 
     //Change Active Player if not won
-    if (notWon) {
+    if (!won) {
       //Pick new starting cell
       //TODO Change algorithm for picking starting cell
       this.controlledX = 5;
@@ -206,6 +210,53 @@ export default class StateManager {
         );
       }
       this.emitter.emit("active-player-changed", this.activePlayer);
+    } else {
+      this.emitter.emit("game-won", {
+        player: this.activePlayer,
+        session: this.activeSession,
+      });
     }
+  }
+  // Function to check for a win
+  isWon(
+    board = this.board,
+    row = this.controlledX,
+    col = this.controlledY,
+    disc = this.activePlayer
+  ) {
+    return (
+      this.checkDirection(board, row, col, disc, 1, 0) || // Horizontal
+      this.checkDirection(board, row, col, disc, 0, 1) || // Vertical
+      this.checkDirection(board, row, col, disc, 1, 1) || // Diagonal /
+      this.checkDirection(board, row, col, disc, 1, -1) // Diagonal \
+    );
+  }
+  // Helper function to check a specific direction
+  checkDirection(board, row, col, disc, rowDir, colDir) {
+    let count = 0;
+
+    for (let i = -3; i <= 3; i++) {
+      const r = row + i * rowDir;
+      const c = col + i * colDir;
+
+      if (
+        r >= 0 &&
+        r < board.length &&
+        c >= 0 &&
+        c < board[0].length &&
+        board[r][c].getPlayer() === disc
+      ) {
+        count++;
+        if (count === 4) return true;
+      } else {
+        count = 0;
+      }
+    }
+
+    return false;
+  }
+
+  updateActiveSession(newSession) {
+    this.activeSession = newSession;
   }
 }

@@ -67,6 +67,7 @@ export default class Networkhost {
           let status = "";
           if (element.sessionID == arg) {
             element.player2 = socket.id;
+            _stateManager.updateActiveSession(arg);
             buildIO.sockets.to(element["player1"]).emit("playerjoined");
             status = "success";
           }
@@ -93,6 +94,27 @@ export default class Networkhost {
             buildIO.sockets
               .to(element.player1)
               .emit("color-blocked", colorCode);
+          }
+        }
+      });
+
+      _ee.on("game-won", (data) => {
+        let winner = "";
+        let loser = "";
+        if (data.player == 1) {
+          winner = "player1";
+          loser = "player2";
+        } else {
+          winner = "player2";
+          loser = "player1";
+        }
+
+        for (let i = 0; i < this.activeSessions.length; i++) {
+          const element = this.activeSessions[i];
+
+          if (element.sessionID == data.session) {
+            buildIO.sockets.to(element[winner]).emit("won");
+            buildIO.sockets.to(element[loser]).emit("lost");
           }
         }
       });

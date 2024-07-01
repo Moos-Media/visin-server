@@ -1,6 +1,7 @@
 export default class GameCell {
   constructor(_color = "WHITE", _blinkingColor = "WHITE", _frameRate = 30) {
     this.color = _color;
+    this.player = -99;
     this.blinkingColor = _blinkingColor;
     this.isOn = true;
     this.isBlinking = false;
@@ -67,5 +68,13 @@ export default class GameCell {
 
   getIsBlinking() {
     return this.isBlinking;
+  }
+
+  setPlayer(_player) {
+    this.player = _player;
+  }
+
+  getPlayer() {
+    return this.player;
   }
 }
