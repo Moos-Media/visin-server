@@ -62,7 +62,7 @@ export default class StateManager {
     for (let i = 0; i < this.height; i++) {
       for (let j = 0; j < this.width; j++) {
         //First Row Left to Right etc.
-        if (i % 2 == 0) {
+        if (i % 2 == 1) {
           currentElement = this.board[j][i];
         } else {
           // Second Row Right to Left etc.
@@ -198,7 +198,6 @@ export default class StateManager {
     this.moveCount += 1;
 
     let won = this.isWon();
-    console.log(won);
 
     //Change Active Player if not won
     if (!won) {
@@ -283,9 +282,6 @@ export default class StateManager {
     }
 
     let pickedIndex = this._helperGetRandomInt(available.length);
-    console.log(available);
-    console.log("Picked Index: " + pickedIndex);
-    console.log("Index: " + available[pickedIndex]);
 
     this.controlledX = available[pickedIndex];
     this.controlledY = 0;
