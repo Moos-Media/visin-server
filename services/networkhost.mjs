@@ -142,7 +142,6 @@ export default class Networkhost {
 
         if (sessionToDelete > -1) {
           this.activeSessions.splice(sessionToDelete, 1);
-          _stateManager.whiteOut();
         }
       });
 

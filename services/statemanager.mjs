@@ -33,6 +33,7 @@ export default class StateManager {
 
     this.pickStartingCell();
     this.moveCount = 0;
+    this.clearedForPlay = false;
   }
 
   useForPlay() {
@@ -235,12 +236,12 @@ export default class StateManager {
         this.reset();
         this.setupTHMLOGO(2, 1);
       }, 10000);
-      this.reset();
     } else if (this.moveCount == 42) {
       this.emitter.emit("game-draw", {
         session: this.activePlayer,
       });
       setTimeout(() => {
+        console.log("Test");
         this.reset();
         this.setupTHMLOGO(2, 1);
       }, 10000);
