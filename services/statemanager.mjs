@@ -17,12 +17,11 @@ export default class StateManager {
     this.activeSession = 0;
     this.frameRate = frameRate;
     this.moveCount = 0;
+    this.clearedForPlay = false;
 
     this.reset();
 
-    this.board[this.controlledX][this.controlledY].changeColor(
-      this.player1Color
-    );
+    this.setupTHMLOGO(2, 1);
   }
 
   reset() {
@@ -34,7 +33,17 @@ export default class StateManager {
 
     this.pickStartingCell();
     this.moveCount = 0;
+    this.clearedForPlay = false;
   }
+
+  useForPlay() {
+    this.whiteOut();
+    this.board[this.controlledX][this.controlledY].changeColor(
+      this.player1Color
+    );
+    this.board[this.controlledX][this.controlledY].turnOnBlinking();
+  }
+
   getCurrentBoardForDebug() {
     let output = new Array();
 
@@ -196,6 +205,7 @@ export default class StateManager {
 
   endMove() {
     this.board[this.controlledX][this.controlledY].setPlayer(this.activePlayer);
+    this.board[this.controlledX][this.controlledY].turnOffBlinking();
     this.moveCount += 1;
 
     let won = this.isWon();
@@ -215,18 +225,26 @@ export default class StateManager {
           this.player1Color
         );
       }
+      this.board[this.controlledX][this.controlledY].turnOnBlinking();
       this.emitter.emit("active-player-changed", this.activePlayer);
     } else if (won) {
       this.emitter.emit("game-won", {
         player: this.activePlayer,
         session: this.activeSession,
       });
-      this.reset();
+      setTimeout(() => {
+        this.reset();
+        this.setupTHMLOGO(2, 1);
+      }, 10000);
     } else if (this.moveCount == 42) {
       this.emitter.emit("game-draw", {
         session: this.activePlayer,
       });
-      this.reset();
+      setTimeout(() => {
+        console.log("Test");
+        this.reset();
+        this.setupTHMLOGO(2, 1);
+      }, 10000);
     }
   }
   // Function to check for a win
@@ -290,5 +308,24 @@ export default class StateManager {
 
   _helperGetRandomInt(max) {
     return Math.floor(Math.random() * max);
+  }
+
+  showColorPicking(side, col) {
+    if (!this.clearedForPlay) {
+      this.whiteOut();
+      this.clearedForPlay = true;
+    }
+    let offsetOffset = this.width % 2;
+    let halfWidth = Math.floor(this.width / 2);
+    let offset = 0;
+    side == 0 ? (offset = 0) : (offset = halfWidth + offsetOffset);
+
+    for (let i = offset; i < offset + halfWidth; i++) {
+      for (let j = 0; j < this.height; j++) {
+        const element = this.board[i][j];
+
+        element.changeColor(col);
+      }
+    }
   }
 }

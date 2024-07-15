@@ -18,7 +18,7 @@ export default class Networkhost {
     this.players = new Array();
     this.activeSessions = new Array();
     this.buffer = new Array();
-
+    this.isUsedForPlay = false;
     //Set up Servers with passed in values
     //
     //Build
@@ -39,6 +39,10 @@ export default class Networkhost {
       socket.on("/api/client/sendControl", (args) => {
         if (args.player == this.CURRENTPLAYER) {
           this.buffer.push(args.control);
+          if (!this.isUsedForPlay) {
+            this.isUsedForPlay = true;
+            _stateManager.useForPlay();
+          }
         }
       });
 
@@ -85,18 +89,34 @@ export default class Networkhost {
           if (playerIndex == 1) {
             element.player1Color = colorCode;
             _stateManager.updatePlayer1Color(colorCode);
+            _stateManager.showColorPicking(0, colorCode);
             buildIO.sockets
               .to(element.player2)
               .emit("color-blocked", colorCode);
           } else {
             element.player2Color = colorCode;
             _stateManager.updatePlayer2Color(colorCode);
+            _stateManager.showColorPicking(1, colorCode);
             buildIO.sockets
               .to(element.player1)
               .emit("color-blocked", colorCode);
           }
         }
       });
+
+      socket.on(
+        "/api/client/getAchievements",
+        (SESSIONID, PLAYERID, callback) => {
+          console.log(SESSIONID);
+          console.log(PLAYERID);
+
+          let test = new Array();
+          test.push(1);
+          test.push(15);
+          test.push(16);
+          callback(test);
+        }
+      );
 
       _ee.on("game-won", (data) => {
         let sessionToDelete = -1;
@@ -122,7 +142,6 @@ export default class Networkhost {
 
         if (sessionToDelete > -1) {
           this.activeSessions.splice(sessionToDelete, 1);
-          _stateManager.whiteOut();
         }
       });
 
@@ -194,6 +213,14 @@ export default class Networkhost {
       response.json({
         boardInfo: _stateManager.getCurrentBoardForShowing(),
         status: "success",
+      });
+    });
+
+    debugApp.post("/api/show/getBrightness", (request, response) => {
+      const data = request.body;
+
+      response.json({
+        brightness: 255,
       });
     });
 
