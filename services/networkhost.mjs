@@ -18,7 +18,7 @@ export default class Networkhost {
     this.players = new Array();
     this.activeSessions = new Array();
     this.buffer = new Array();
-
+    this.isUsedForPlay = false;
     //Set up Servers with passed in values
     //
     //Build
@@ -35,11 +35,14 @@ export default class Networkhost {
     //
     buildIO.on("connection", (socket) => {
       this.players.push(socket.id);
-      console.log(socket);
 
       socket.on("/api/client/sendControl", (args) => {
         if (args.player == this.CURRENTPLAYER) {
           this.buffer.push(args.control);
+          if (!this.isUsedForPlay) {
+            this.isUsedForPlay = true;
+            _stateManager.useForPlay();
+          }
         }
       });
 
@@ -100,6 +103,20 @@ export default class Networkhost {
           }
         }
       });
+
+      socket.on(
+        "/api/client/getAchievements",
+        (SESSIONID, PLAYERID, callback) => {
+          console.log(SESSIONID);
+          console.log(PLAYERID);
+
+          let test = new Array();
+          test.push(1);
+          test.push(15);
+          test.push(16);
+          callback(test);
+        }
+      );
 
       _ee.on("game-won", (data) => {
         let sessionToDelete = -1;
