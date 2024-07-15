@@ -35,6 +35,7 @@ export default class Networkhost {
     //
     buildIO.on("connection", (socket) => {
       this.players.push(socket.id);
+      console.log(socket);
 
       socket.on("/api/client/sendControl", (args) => {
         if (args.player == this.CURRENTPLAYER) {
@@ -85,12 +86,14 @@ export default class Networkhost {
           if (playerIndex == 1) {
             element.player1Color = colorCode;
             _stateManager.updatePlayer1Color(colorCode);
+            _stateManager.showColorPicking(0, colorCode);
             buildIO.sockets
               .to(element.player2)
               .emit("color-blocked", colorCode);
           } else {
             element.player2Color = colorCode;
             _stateManager.updatePlayer2Color(colorCode);
+            _stateManager.showColorPicking(1, colorCode);
             buildIO.sockets
               .to(element.player1)
               .emit("color-blocked", colorCode);
@@ -194,6 +197,14 @@ export default class Networkhost {
       response.json({
         boardInfo: _stateManager.getCurrentBoardForShowing(),
         status: "success",
+      });
+    });
+
+    debugApp.post("/api/show/getBrightness", (request, response) => {
+      const data = request.body;
+
+      response.json({
+        brightness: 255,
       });
     });
 

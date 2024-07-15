@@ -291,4 +291,19 @@ export default class StateManager {
   _helperGetRandomInt(max) {
     return Math.floor(Math.random() * max);
   }
+
+  showColorPicking(side, col) {
+    let offsetOffset = this.width % 2;
+    let halfWidth = Math.floor(this.width / 2);
+    let offset = 0;
+    side == 0 ? (offset = 0) : (offset = halfWidth + offsetOffset);
+
+    for (let i = offset; i < offset + halfWidth; i++) {
+      for (let j = 0; j < this.height; j++) {
+        const element = this.board[i][j];
+
+        element.changeColor(col);
+      }
+    }
+  }
 }
