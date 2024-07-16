@@ -17,6 +17,7 @@ export default class StateManager {
     this.frameRate = frameRate;
     this.moveCount = 0;
     this.clearedForPlay = false;
+    this.isAvailable = true;
 
     this.reset();
 
@@ -33,6 +34,18 @@ export default class StateManager {
     this.pickStartingCell();
     this.moveCount = 0;
     this.clearedForPlay = false;
+  }
+
+  block() {
+    this.isAvailable = false;
+  }
+
+  release() {
+    this.isAvailable = true;
+  }
+
+  getIsAvailable() {
+    return this.isAvailable;
   }
 
   useForPlay() {
