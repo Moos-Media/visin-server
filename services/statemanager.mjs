@@ -34,6 +34,7 @@ export default class StateManager {
       }
     }
 
+    this.winningCells = [];
     this.pickStartingCell();
     this.activePlayer = 1;
     this.clearedForPlay = false;
