@@ -20,6 +20,7 @@ export default class StateManager {
     this.isAvailable = true;
     this.achPlayer1 = new Array(20).fill(false);
     this.achPlayer2 = new Array(20).fill(false);
+    this.winningCells = [];
 
     this.reset();
 
@@ -34,7 +35,7 @@ export default class StateManager {
     }
 
     this.pickStartingCell();
-
+    this.activePlayer = 1;
     this.clearedForPlay = false;
   }
 
@@ -264,6 +265,12 @@ export default class StateManager {
       this.board[this.controlledX][this.controlledY].turnOnBlinking();
       this.emitter.emit("active-player-changed", this.activePlayer);
     } else if (won) {
+      for (let i = 0; i < this.winningCells.length; i++) {
+        const element = this.winningCells[i];
+
+        element.turnOnBlinking();
+      }
+
       this.emitter.emit("game-won", {
         player: this.activePlayer,
         session: this.activeSession,
@@ -294,16 +301,24 @@ export default class StateManager {
     col = this.controlledY,
     disc = this.activePlayer
   ) {
-    return (
+    if (
       this.checkDirection(board, row, col, disc, 1, 0) || // Horizontal
       this.checkDirection(board, row, col, disc, 0, 1) || // Vertical
       this.checkDirection(board, row, col, disc, 1, 1) || // Diagonal /
       this.checkDirection(board, row, col, disc, 1, -1) // Diagonal \
-    );
+    ) {
+      return true;
+    } else {
+      // Clear the TEST array if no win is found
+      this.TEST = [];
+      return false;
+    }
   }
+
   // Helper function to check a specific direction
   checkDirection(board, row, col, disc, rowDir, colDir) {
     let count = 0;
+    let tempArray = []; // Temporary array to store potential winning positions
 
     for (let i = -3; i <= 3; i++) {
       const r = row + i * rowDir;
@@ -317,9 +332,15 @@ export default class StateManager {
         board[r][c].getPlayer() === disc
       ) {
         count++;
-        if (count === 4) return true;
+        tempArray.push([r, c]); // Store the position
+
+        if (count === 4) {
+          this.winningCells = tempArray; // Store the winning positions in TEST
+          return true;
+        }
       } else {
         count = 0;
+        tempArray = []; // Reset the temporary array if the sequence is broken
       }
     }
 
