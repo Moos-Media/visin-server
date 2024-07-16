@@ -18,6 +18,8 @@ export default class StateManager {
     this.moveCount = 0;
     this.clearedForPlay = false;
     this.isAvailable = true;
+    this.achPlayer1 = new Array(20).fill(false);
+    this.achPlayer2 = new Array(20).fill(false);
 
     this.reset();
 
@@ -32,12 +34,15 @@ export default class StateManager {
     }
 
     this.pickStartingCell();
-    this.moveCount = 0;
+
     this.clearedForPlay = false;
   }
 
   block() {
     this.isAvailable = false;
+    this.moveCount = 0;
+    this.achPlayer1 = new Array(20).fill(false);
+    this.achPlayer2 = new Array(20).fill(false);
   }
 
   release() {
@@ -46,6 +51,22 @@ export default class StateManager {
 
   getIsAvailable() {
     return this.isAvailable;
+  }
+
+  getAch(player) {
+    let toCheck;
+    let output = new Array();
+
+    player == 1 ? (toCheck = this.achPlayer1) : (toCheck = this.achPlayer2);
+
+    for (let i = 0; i < toCheck.length; i++) {
+      const element = toCheck[i];
+
+      if (element) {
+        output.push(i);
+      }
+    }
+    return output;
   }
 
   useForPlay() {
@@ -247,6 +268,7 @@ export default class StateManager {
         player: this.activePlayer,
         session: this.activeSession,
       });
+      this.updateAchievements();
       setTimeout(() => {
         this.reset();
         this.release();
@@ -256,6 +278,7 @@ export default class StateManager {
       this.emitter.emit("game-draw", {
         session: this.activePlayer,
       });
+      this.updateAchievements();
       setTimeout(() => {
         console.log("Test");
         this.reset();
@@ -342,6 +365,235 @@ export default class StateManager {
         const element = this.board[i][j];
 
         element.changeColor(col);
+      }
+    }
+  }
+
+  updateAchievements() {
+    //Achievement 1: Win with horizontal line
+    if (
+      this.checkDirection(
+        this.board,
+        this.controlledX,
+        this.controlledY,
+        this.activePlayer,
+        1,
+        0
+      )
+    ) {
+      if (this.activePlayer == 1) {
+        this.achPlayer1[0] = true;
+      } else if (this.activePlayer == 2) {
+        this.achPlayer2[0] = true;
+      }
+    }
+
+    //Achievement 2: Win with vertical line
+    if (
+      this.checkDirection(
+        this.board,
+        this.controlledX,
+        this.controlledY,
+        this.activePlayer,
+        0,
+        1
+      )
+    ) {
+      if (this.activePlayer == 1) {
+        this.achPlayer1[1] = true;
+      } else if (this.activePlayer == 2) {
+        this.achPlayer2[1] = true;
+      }
+    }
+
+    //Achievement 3: Win with diagonal line
+    if (
+      this.checkDirection(
+        this.board,
+        this.controlledX,
+        this.controlledY,
+        this.activePlayer,
+        1,
+        -1
+      ) ||
+      this.checkDirection(
+        this.board,
+        this.controlledX,
+        this.controlledY,
+        this.activePlayer,
+        1,
+        1
+      )
+    ) {
+      if (this.activePlayer == 1) {
+        this.achPlayer1[2] = true;
+      } else if (this.activePlayer == 2) {
+        this.achPlayer2[2] = true;
+      }
+    }
+
+    //Achievement 4: Draw
+    if (
+      !this.isWon(
+        this.board,
+        this.controlledX,
+        this.controlledY,
+        this.activePlayer
+      ) &&
+      this.moveCount == 42
+    ) {
+      this.achPlayer1[3] = true;
+      this.achPlayer2[3] = true;
+    }
+
+    //Achievement 5: Win two connects with one stone
+    let winCount = 0;
+    if (
+      this.checkDirection(
+        this.board,
+        this.controlledX,
+        this.controlledY,
+        this.activePlayer,
+        1,
+        0
+      )
+    )
+      winCount += 1;
+    if (
+      this.checkDirection(
+        this.board,
+        this.controlledX,
+        this.controlledY,
+        this.activePlayer,
+        0,
+        1
+      )
+    )
+      winCount += 1;
+    if (
+      this.checkDirection(
+        this.board,
+        this.controlledX,
+        this.controlledY,
+        this.activePlayer,
+        1,
+        1
+      )
+    )
+      winCount += 1;
+    if (
+      this.checkDirection(
+        this.board,
+        this.controlledX,
+        this.controlledY,
+        this.activePlayer,
+        1,
+        -1
+      )
+    )
+      winCount += 1;
+
+    if (winCount == 2) {
+      if (this.activePlayer == 1) {
+        this.achPlayer1[4] = true;
+      } else if (this.activePlayer == 2) {
+        this.achPlayer2[4] = true;
+      }
+    }
+
+    //Achievement 8: Win with color red
+    if (
+      this.isWon(
+        this.board,
+        this.controlledX,
+        this.controlledY,
+        this.activePlayer
+      )
+    ) {
+      if (this.activePlayer == 1 && this.player1Color == "COLOR2") {
+        this.achPlayer1[7] = true;
+      } else if (this.activePlayer == 2 && this.player2Color == "COLOR2") {
+        this.achPlayer2[7] = true;
+      }
+    }
+
+    //Achievement 9: Win with color yellow
+    if (
+      this.isWon(
+        this.board,
+        this.controlledX,
+        this.controlledY,
+        this.activePlayer
+      )
+    ) {
+      if (this.activePlayer == 1 && this.player1Color == "COLOR3") {
+        this.achPlayer1[8] = true;
+      } else if (this.activePlayer == 2 && this.player2Color == "COLOR3") {
+        this.achPlayer2[8] = true;
+      }
+    }
+
+    //Achievement 10: Win with color orange
+    if (
+      this.isWon(
+        this.board,
+        this.controlledX,
+        this.controlledY,
+        this.activePlayer
+      )
+    ) {
+      if (this.activePlayer == 1 && this.player1Color == "COLOR5") {
+        this.achPlayer1[9] = true;
+      } else if (this.activePlayer == 2 && this.player2Color == "COLOR5") {
+        this.achPlayer2[9] = true;
+      }
+    }
+
+    //Achievement 11: Win with color cyan
+    if (
+      this.isWon(
+        this.board,
+        this.controlledX,
+        this.controlledY,
+        this.activePlayer
+      )
+    ) {
+      if (this.activePlayer == 1 && this.player1Color == "COLOR6") {
+        this.achPlayer1[10] = true;
+      } else if (this.activePlayer == 2 && this.player2Color == "COLOR6") {
+        this.achPlayer2[10] = true;
+      }
+    }
+
+    //Achievement 12: Win with color pink
+    if (
+      this.isWon(
+        this.board,
+        this.controlledX,
+        this.controlledY,
+        this.activePlayer
+      )
+    ) {
+      if (this.activePlayer == 1 && this.player1Color == "COLOR4") {
+        this.achPlayer1[11] = true;
+      } else if (this.activePlayer == 2 && this.player2Color == "COLOR4") {
+        this.achPlayer2[11] = true;
+      }
+    }
+
+    //Achievement 13: Win with color blue
+    if (
+      this.isWon(
+        this.board,
+        this.controlledX,
+        this.controlledY,
+        this.activePlayer
+      )
+    ) {
+      if (this.activePlayer == 1 && this.player1Color == "COLOR1") {
+        this.achPlayer1[12] = true;
+      } else if (this.activePlayer == 2 && this.player2Color == "COLOR1") {
+        this.achPlayer2[12] = true;
       }
     }
   }

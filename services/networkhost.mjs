@@ -70,7 +70,7 @@ export default class Networkhost {
           const element = this.activeSessions[i];
 
           let status = "";
-          if (element.sessionID == arg && _stateManager.getIsAvailable()) {
+          if (element.sessionID == arg) {
             element.player2 = socket.id;
             _stateManager.updateActiveSession(arg);
             buildIO.sockets.to(element["player1"]).emit("playerjoined");
@@ -108,14 +108,11 @@ export default class Networkhost {
       socket.on(
         "/api/client/getAchievements",
         (SESSIONID, PLAYERID, callback) => {
-          console.log(SESSIONID);
-          console.log(PLAYERID);
-
-          let test = new Array();
-          test.push(1);
-          test.push(15);
-          test.push(16);
-          callback(test);
+          console.log(
+            "Got request: " + "ID: " + SESSIONID + "PLAYER: " + PLAYERID
+          );
+          let output = _stateManager.getAch(PLAYERID);
+          callback(output);
         }
       );
 
