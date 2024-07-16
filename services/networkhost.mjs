@@ -70,7 +70,7 @@ export default class Networkhost {
           const element = this.activeSessions[i];
 
           let status = "";
-          if (element.sessionID == arg) {
+          if (element.sessionID == arg && _stateManager.getIsAvailable()) {
             element.player2 = socket.id;
             _stateManager.updateActiveSession(arg);
             buildIO.sockets.to(element["player1"]).emit("playerjoined");

@@ -249,6 +249,7 @@ export default class StateManager {
       });
       setTimeout(() => {
         this.reset();
+        this.release();
         this.setupTHMLOGO(2, 1);
       }, 10000);
     } else if (this.moveCount == 42) {
@@ -258,6 +259,7 @@ export default class StateManager {
       setTimeout(() => {
         console.log("Test");
         this.reset();
+        this.release();
         this.setupTHMLOGO(2, 1);
       }, 10000);
     }
