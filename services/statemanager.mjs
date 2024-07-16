@@ -205,6 +205,8 @@ export default class StateManager {
     // Check for Out-Of-Bounds of X Move
     if (this.controlledX == 0 && _xOff < 0) return false;
     if (this.controlledX == this.width - 1 && _xOff > 0) return false;
+    if (this.controlledX + _xOff < 0 || this.controlledX + _xOff >= this.width)
+      return false;
 
     // Check for Out-Of-Bound of Y Move
     if (this.controlledY == this.height - 1 && _yOff > 0) return false;
