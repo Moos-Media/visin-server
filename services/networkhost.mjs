@@ -117,6 +117,7 @@ export default class Networkhost {
       );
 
       _ee.on("game-won", (data) => {
+        this.isUsedForPlay = false;
         let sessionToDelete = -1;
         let winner = "";
         let loser = "";
