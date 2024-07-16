@@ -1,6 +1,5 @@
 import Utils from "./utils.mjs";
 import GameCell from "./gamecell.mjs";
-import GameSession from "./gamesession.mjs";
 
 export default class StateManager {
   constructor(inputWidth = 22, inputHeight = 8, frameRate, _ee) {
@@ -118,7 +117,7 @@ export default class StateManager {
     this.board[xOff + 2][yOff + 3].changeColor("GREEN");
   }
 
-  doGameTick(input) {
+  async doGameTick(input) {
     // Get Offsets for move direction
     let xOff,
       yOff = 0;
@@ -146,7 +145,10 @@ export default class StateManager {
     // Drop Down
     if (input == "DOWN") {
       while (this.isValid(xOff, yOff)) {
+        this.board[this.controlledX][this.controlledY].turnOffBlinking();
         this.swapCells(xOff, yOff);
+        const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+        await sleep(500);
       }
       this.endMove();
       //Move left and right
