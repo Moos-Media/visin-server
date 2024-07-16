@@ -269,7 +269,7 @@ export default class StateManager {
       for (let i = 0; i < this.winningCells.length; i++) {
         const element = this.winningCells[i];
 
-        element.turnOnBlinking();
+        this.board[element[0]][element[1]].turnOnBlinking();
       }
 
       this.emitter.emit("game-won", {
