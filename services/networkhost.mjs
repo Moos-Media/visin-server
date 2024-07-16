@@ -152,8 +152,9 @@ export default class Networkhost {
           const element = this.activeSessions[i];
 
           if (element.sessionID == data.session) {
-            buildIO.sockets.to(element[element.player1]).emit("draw");
-            buildIO.sockets.to(element[element.player2]).emit("draw");
+            console.log("Got past if");
+            buildIO.sockets.to(element["player1"]).emit("game-draw");
+            buildIO.sockets.to(element["player2"]).emit("game-draw");
             sessionToDelete = i;
           }
         }
