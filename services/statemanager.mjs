@@ -249,7 +249,7 @@ export default class StateManager {
     let won = this.isWon();
 
     //Change Active Player if not won
-    if (!won) {
+    if (!won && this.moveCount < 42) {
       this.pickStartingCell();
 
       if (this.activePlayer == 1) {
@@ -282,7 +282,7 @@ export default class StateManager {
         this.release();
         this.setupTHMLOGO(2, 1);
       }, 10000);
-    } else if (this.moveCount == 42) {
+    } else if (this.moveCount == 2) {
       this.emitter.emit("game-draw", {
         session: this.activePlayer,
       });
