@@ -49,7 +49,7 @@ export default class Networkhost {
       socket.on("/api/client/startSession", (callback) => {
         let statusOut = "failed";
         let ID = 0;
-        if (this.activeSessions.length < 10) {
+        if (this.activeSessions.length < 10 && _stateManager.getIsAvailable()) {
           statusOut = "success";
           ID = Math.floor(Math.random() * 100000);
           this.activeSessions.push({
@@ -57,6 +57,7 @@ export default class Networkhost {
             player2: "",
             sessionID: ID,
           });
+          _stateManager.block();
         }
         callback({
           status: statusOut,
@@ -107,14 +108,11 @@ export default class Networkhost {
       socket.on(
         "/api/client/getAchievements",
         (SESSIONID, PLAYERID, callback) => {
-          console.log(SESSIONID);
-          console.log(PLAYERID);
-
-          let test = new Array();
-          test.push(1);
-          test.push(15);
-          test.push(16);
-          callback(test);
+          console.log(
+            "Got request: " + "ID: " + SESSIONID + "PLAYER: " + PLAYERID
+          );
+          let output = _stateManager.getAch(PLAYERID);
+          callback(output);
         }
       );
 
@@ -142,6 +140,7 @@ export default class Networkhost {
 
         if (sessionToDelete > -1) {
           this.activeSessions.splice(sessionToDelete, 1);
+          _stateManager.release();
         }
       });
 
@@ -160,7 +159,7 @@ export default class Networkhost {
 
         if (sessionToDelete > -1) {
           this.activeSessions.splice(sessionToDelete, 1);
-          _stateManager.whiteOut();
+          _stateManager.release();
         }
       });
     });
