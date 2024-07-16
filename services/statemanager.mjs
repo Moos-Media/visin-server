@@ -287,6 +287,7 @@ export default class StateManager {
       }, 10000);
     }
     if (this.moveCount == 42) {
+      console.log("DRAW");
       this.emitter.emit("game-draw", {
         session: this.activeSession,
       });
