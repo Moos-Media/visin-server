@@ -19,6 +19,8 @@ export default class Networkhost {
     this.activeSessions = new Array();
     this.buffer = new Array();
     this.isUsedForPlay = false;
+
+    this.MODELBRIGHTNESS = 255;
     //Set up Servers with passed in values
     //
     //Build
@@ -220,7 +222,19 @@ export default class Networkhost {
       const data = request.body;
 
       response.json({
-        brightness: 255,
+        brightness: this.MODELBRIGHTNESS,
+      });
+    });
+
+    debugApp.post("/api/show/setBrightness", (request, response) => {
+      const data = request.body;
+
+      this.MODELBRIGHTNESS = data.inputValue;
+
+      console.log("Set new Brightness: " + this.MODELBRIGHTNESS);
+
+      response.json({
+        success: true,
       });
     });
 
