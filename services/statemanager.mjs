@@ -251,8 +251,7 @@ export default class StateManager {
     let won = this.isWon();
 
     //Change Active Player if not won
-    if (!won) {
-      //&& this.moveCount < 42) {
+    if (!won && this.moveCount < 42) {
       this.pickStartingCell();
 
       if (this.activePlayer == 1) {
