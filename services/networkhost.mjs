@@ -68,19 +68,43 @@ export default class Networkhost {
       });
 
       socket.on("/api/client/joinSession", (arg, callback) => {
+        console.log("Received arg: " + arg);
         for (let i = 0; i < this.activeSessions.length; i++) {
           const element = this.activeSessions[i];
 
           let status = "";
           if (element.sessionID == arg) {
+            console.log("Found session");
             element.player2 = socket.id;
             _stateManager.updateActiveSession(arg);
             buildIO.sockets.to(element["player1"]).emit("playerjoined");
+            console.log("status: " + status);
             status = "success";
+            console.log("status: " + status);
           }
           callback({
-            status,
+            status: status,
           });
+        }
+      });
+
+      socket.on("api/client/endSession", (arg) => {
+        console.log("Got Message");
+        let sessionToDelete = -1;
+
+        for (let i = 0; i < this.activeSessions.length; i++) {
+          const element = this.activeSessions[i];
+
+          if (element.sessionID == arg) {
+            buildIO.sockets.to(element["player1"]).emit("delete");
+            buildIO.sockets.to(element["player2"]).emit("delete");
+            sessionToDelete = i;
+          }
+        }
+
+        if (sessionToDelete > -1) {
+          this.activeSessions.splice(sessionToDelete, 1);
+          _stateManager.whiteOut();
         }
       });
 
