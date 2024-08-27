@@ -60,6 +60,8 @@ export default class Networkhost {
             sessionID: ID,
           });
           _stateManager.block();
+        } else if (!_stateManager.getIsAvailable()) {
+          statusOut = "blocked";
         }
         callback({
           status: statusOut,
@@ -105,6 +107,8 @@ export default class Networkhost {
         if (sessionToDelete > -1) {
           this.activeSessions.splice(sessionToDelete, 1);
           _stateManager.whiteOut();
+          _stateManager.setupTHMLOGO(2, 1);
+          _stateManager.release();
         }
       });
 
