@@ -224,7 +224,6 @@ export default class StateManager {
           sessionID: this.activeSession,
         });
       } else if (this.activePlayer == 2) {
-        console.log("In here");
         this.timeRem2 -= 1;
         this.emitter.emit("update-time", {
           time: this.timeRem2,

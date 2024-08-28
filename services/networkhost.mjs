@@ -431,6 +431,7 @@ export default class Networkhost {
           _stateManager.release();
           this.hasWaitingRandom = false;
           this.isBotGame = false;
+          this.colSelected = 0;
         }
       });
 
@@ -456,6 +457,7 @@ export default class Networkhost {
           _stateManager.release();
           this.hasWaitingRandom = false;
           this.isBotGame = false;
+          this.colSelected = 0;
         }
       });
     });
