@@ -11,16 +11,21 @@ export default class StateManager {
     this.controlledY = 0;
     this.player1Color = "COLOR1";
     this.player2Color = "COLOR2";
-    this.activePlayer = 1;
+    this.activePlayer = -99;
     this.emitter = _ee;
     this.activeSession = 0;
     this.frameRate = frameRate;
+    this.frameCount = 0;
     this.moveCount = 0;
     this.clearedForPlay = false;
     this.isAvailable = true;
     this.achPlayer1 = new Array(20).fill(false);
     this.achPlayer2 = new Array(20).fill(false);
     this.winningCells = [];
+    this.timePerMove = process.env.GAMETIME;
+    this.timeRem1 = 0;
+    this.timeRem2 = 0;
+    this.timeCounts = false;
 
     this.reset();
 
@@ -36,8 +41,28 @@ export default class StateManager {
 
     this.winningCells = [];
     this.pickStartingCell();
-    this.activePlayer = 1;
+    this.activePlayer = -99;
+    this.emitter.emit("active-player-changed", this.activePlayer);
     this.clearedForPlay = false;
+    this.timeCounts = false;
+    this.timeRem1 = 0;
+    this.timeRem2 = 0;
+  }
+
+  startGame() {
+    this.activePlayer = 1;
+
+    setTimeout(() => {
+      this.whiteOut();
+      this.board[this.controlledX][this.controlledY].changeColor(
+        this.player1Color
+      );
+      this.board[this.controlledX][this.controlledY].turnOnBlinking();
+      this.emitter.emit("active-player-changed", this.activePlayer);
+      this.timeRem1 = Math.floor(this.timePerMove * 60);
+      this.timeRem2 = Math.floor(this.timePerMove * 60);
+      this.timeCounts = true;
+    }, 2000);
   }
 
   block() {
@@ -53,6 +78,10 @@ export default class StateManager {
 
   getIsAvailable() {
     return this.isAvailable;
+  }
+
+  getActiveSession() {
+    return this.activeSession;
   }
 
   getAch(player) {
@@ -71,12 +100,12 @@ export default class StateManager {
     return output;
   }
 
-  useForPlay() {
-    this.whiteOut();
-    this.board[this.controlledX][this.controlledY].changeColor(
-      this.player1Color
-    );
-    this.board[this.controlledX][this.controlledY].turnOnBlinking();
+  getCurrentBoardCopy() {
+    return JSON.parse(JSON.stringify(this.board));
+  }
+
+  getCurrentColumn() {
+    return this.controlledX;
   }
 
   getCurrentBoardForDebug() {
@@ -128,10 +157,20 @@ export default class StateManager {
     };
   }
 
+  getTimePerMove() {
+    return this.timePerMove;
+  }
+
+  setTimePerMove(newValue) {
+    this.timePerMove = Math.floor(newValue);
+    console.log("Set value:" + this.timePerMove);
+  }
+
   whiteOut() {
     for (let i = 0; i < this.width; i++) {
       for (let j = 0; j < this.height; j++) {
         this.board[i][j].changeColor("WHITE");
+        this.board[i][j].turnOffBlinking();
       }
     }
   }
@@ -154,6 +193,35 @@ export default class StateManager {
   }
 
   async doGameTick(input) {
+    // Increment Frame Count
+    this.frameCount += 1;
+    if (this.frameCount >= this.frameRate) this.frameCount = 0;
+    // Do Time Manipulation
+    if (this.timeCounts && this.frameCount == 0) {
+      if (this.activePlayer == 1) {
+        this.timeRem1 -= 1;
+        console.log(this.timeRem1);
+        this.emitter.emit("update-time", {
+          time: this.timeRem1,
+          player: 1,
+          sessionID: this.activeSession,
+        });
+      } else if (this.activePlayer == 2) {
+        console.log("In here");
+        this.timeRem2 -= 1;
+        this.emitter.emit("update-time", {
+          time: this.timeRem2,
+          player: 2,
+          sessionID: this.activeSession,
+        });
+      }
+    }
+
+    if (this.timeRem1 < -10 || this.timeRem2 < -10) {
+      console.log("Im IF");
+      this.emitter.emit("session-abandoned", this.activeSession);
+    }
+
     // Get Offsets for move direction
     let xOff,
       yOff = 0;
@@ -248,7 +316,18 @@ export default class StateManager {
     this.board[this.controlledX][this.controlledY].turnOffBlinking();
     this.moveCount += 1;
 
-    let won = this.isWon();
+    let won = false;
+
+    if (this.timeRem1 > 0 && this.timeRem2 > 0) {
+      won = this.isWon();
+      console.log("First if");
+    } else if (this.activePlayer == 1 && this.timeRem2 <= 0) {
+      won = true;
+      console.log("Second if");
+    } else if (this.activePlayer == 2 && this.timeRem1 <= 0) {
+      won = true;
+      console.log("third if");
+    }
 
     //Change Active Player if not won
     if (!won && this.moveCount < 42) {
@@ -267,6 +346,9 @@ export default class StateManager {
       }
       this.board[this.controlledX][this.controlledY].turnOnBlinking();
       this.emitter.emit("active-player-changed", this.activePlayer);
+      if (this.activePlayer == 2) {
+        this.emitter.emit("possible-bot-move", this.controlledX);
+      }
     } else if (won) {
       for (let i = 0; i < this.winningCells.length; i++) {
         const element = this.winningCells[i];
