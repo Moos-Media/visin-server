@@ -1,5 +1,24 @@
-/api/client/registerClient      userKey: 100-1000                                   status: "success", userID: 0-99
-/api/client/sendControl         userID: 0-99 , control: "LEFT", "DOWN", "RIGHT"     status: "success"
+// socket
 
-/api/debug/login                username: string, passkey: string                   result: bool, sessionToken: rand
-/api/debug/getCurrentBoard      sessionToken: rand                                  status: "success", boardInfo: {width, height, GameArray[{isOn, color}]}
+delete                              keine Daten                                         kein Callback
+/api/client/sendControl             control: string, player: number                     kein Callback
+/api/client/colorSelected           SESSIONID: number, player: number, toSend: string   kein Callback
+/api/client/startSession            keine Daten                                         status: string (success or blocked)
+/api/client/requestRandomSession    keine Daten                                         status: string (success, blocked or failed), SESSIONID: number, PLAYERID: number
+/api/client/requestBotSession       keine Daten                                         status: string (success, blocked or failed), SESSIONID: number, PLAYERID: number
+color-blocked                       string (colorCode)                                  kein Callback
+/api/client/joinSession             number (SESSIONID)                                  status: string
+playerjoined                        keine Daten                                         kein Callback
+/api/client/getMoveTime             keine Daten                                         number (in minutes)
+won                                 keine Daten                                         kein Callback
+lost                                keine Daten                                         kein Callback
+game-draw                           keine Daten                                         kein Callback
+update-time                         number (time remaining in seconds)                  kein Callback
+/api/client/getAchievements         SESSIONID: number, PLAYERID: number                 Array(numbers)
+
+/// API
+/api/debug/login                    username: string, passkey: string                   result: bool, sessionToken: string
+/api/debug/getCurrentBoard          sessionToken: string                                boardInfo: {board: [][], height: number, width: number}
+/api/show/getCurrentBoard          sessionToken: string                                boardInfo: {board: [][], height: number, width: number}
+/api/show/setBrightness             inputValue: number, SESSIONTOKEN:number             succes: bool
+/api/debug/setTime                  inputValue: number, SESSIONTOKEN:number             succes: bool

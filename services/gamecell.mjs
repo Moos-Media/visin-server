@@ -1,3 +1,5 @@
+//Class for handling individual board cells (blinking, color, player who placed it etc.)
+
 export default class GameCell {
   constructor(_color = "WHITE", _blinkingColor = "WHITE", _frameRate = 30) {
     this.color = _color;
@@ -9,17 +11,21 @@ export default class GameCell {
     this.frameInterval = Math.floor(this.FRAMERATE / 2) + 1;
     this.elapsedFrames = 0;
   }
+
+  //Main function, updates blinking loop and returns current color
   update() {
-    //increment Frame Counter
+    //increment Frame Counter, needed for blinking
     this.elapsedFrames += 1;
     let output = "";
 
+    //Blink half ot the time
     if (this.elapsedFrames < this.frameInterval && this.isBlinking) {
       output = this.blinkingColor;
     } else {
       output = this.color;
     }
 
+    //Reset frame counter
     if (this.elapsedFrames > this.FRAMERATE) {
       this.elapsedFrames = 0;
     }
@@ -27,6 +33,7 @@ export default class GameCell {
     return output;
   }
 
+  //Getters, Setters etc.
   changeColor(newColor) {
     this.color = newColor;
   }

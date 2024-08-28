@@ -1,3 +1,5 @@
+//Helper class fuction to create 2D Arrays
+
 export default class Utils {
   make2DArray(x, y) {
     let output = new Array(x);
