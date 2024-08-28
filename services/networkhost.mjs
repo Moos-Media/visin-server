@@ -238,10 +238,8 @@ export default class Networkhost {
       socket.on(
         "/api/client/getAchievements",
         (SESSIONID, PLAYERID, callback) => {
-          console.log(
-            "Got request: " + "ID: " + SESSIONID + "PLAYER: " + PLAYERID
-          );
           let output = _stateManager.getAch(PLAYERID);
+
           callback(output);
         }
       );
