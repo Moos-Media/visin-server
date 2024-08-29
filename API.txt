@@ -1,4 +1,5 @@
-// socket
+// socket Events
+EVENT NAME                          DATA TO BE PASSED IN                                CALLBACK
 
 delete                              keine Daten                                         kein Callback
 /api/client/sendControl             control: string, player: number                     kein Callback
@@ -16,9 +17,11 @@ game-draw                           keine Daten                                 
 update-time                         number (time remaining in seconds)                  kein Callback
 /api/client/getAchievements         SESSIONID: number, PLAYERID: number                 Array(numbers)
 
-/// API
+/// API endpoints all HTTP.POST
+endpoints                           DATA TO BE PASSED IN                                DATA IN RESPONSE
+
 /api/debug/login                    username: string, passkey: string                   result: bool, sessionToken: string
 /api/debug/getCurrentBoard          sessionToken: string                                boardInfo: {board: [][], height: number, width: number}
-/api/show/getCurrentBoard          sessionToken: string                                boardInfo: {board: [][], height: number, width: number}
+/api/show/getCurrentBoard           sessionToken: string                                boardInfo: {board: [][], height: number, width: number}
 /api/show/setBrightness             inputValue: number, SESSIONTOKEN:number             succes: bool
 /api/debug/setTime                  inputValue: number, SESSIONTOKEN:number             succes: bool

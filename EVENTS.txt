@@ -1,5 +1,7 @@
-active-player-changed               playerID of new Player
-possible-bot-move                   data (is unused)
-update-time                         {time, player, sessionID}
-session-abandoned                   sessionID
-game-won                            {player, sessionID}
+EVENT NAME                          PASSED DATA                                         CALLBACK
+
+active-player-changed               playerID of new Player                              kein Callback
+possible-bot-move                   data (is unused)                                    kein Callback
+update-time                         {time, player, sessionID}                           kein Callback
+session-abandoned                   sessionID                                           kein Callback
+game-won                            {player, sessionID}                                 kein Callback
